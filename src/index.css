@@ -7,4 +7,29 @@
     --color-verde: #6bcb77;
     --color-rojo: #ef6461;
     --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --shadow-brutal: 4px 4px 0 0 var(--color-ink);
+}
+
+@theme inline {
+    --color-base: var(--base);
+    --color-surface: var(--surface);
+    --color-surface2: var(--surface2);
+    --color-fg: var(--fg); /* Pensado para texto*/
+    --color-muted: var(--muted); /*Para texto*/
+}
+
+:root{
+    --base: #f3ecdf;
+    --surface: #fdfaf2;
+    --surface2: #eae1d0;
+    --fg: #17130e;
+    --muted: #6e6152; /*los colores muted son mas apagados por asi decir, color secundario para texto*/
+}
+
+[data-theme="dark"] {
+    --base: #211d19;
+    --surface: #2e2823;
+    --surface2: #3a322b;
+    --fg: #f2ece1;
+    --muted: #a79a89;
 }
