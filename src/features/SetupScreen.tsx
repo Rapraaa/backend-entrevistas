@@ -1,4 +1,5 @@
-import { useState, useEffect, FormEvent, KeyboardEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent, KeyboardEvent } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
@@ -12,10 +13,10 @@ type SetupScreenProps = {
 
 export function SetupScreen({ onStart }: SetupScreenProps) {
   // Mock data para los catálogos (se podrían llenar luego desde la API)
-  const [interviewTypes, setInterviewTypes] = useState<string[]>(['Técnica', 'Teórica']);
-  const [jobRoles, setJobRoles] = useState<string[]>(['Frontend Developer', 'Backend Developer', 'Fullstack Developer']);
-  const [seniorities, setSeniorities] = useState<string[]>(['Junior', 'Mid', 'Senior']);
-  const [difficulties, setDifficulties] = useState<string[]>(['Baja', 'Media', 'Alta']);
+  const [interviewTypes] = useState<string[]>(['Técnica', 'Teórica']);
+  const [jobRoles] = useState<string[]>(['Frontend Developer', 'Backend Developer', 'Fullstack Developer']);
+  const [seniorities] = useState<string[]>(['Junior', 'Mid', 'Senior']);
+  const [difficulties] = useState<string[]>(['Baja', 'Media', 'Alta']);
 
   const [interviewType, setInterviewType] = useState(interviewTypes[0]);
   const [targetRole, setTargetRole] = useState(jobRoles[0]);
