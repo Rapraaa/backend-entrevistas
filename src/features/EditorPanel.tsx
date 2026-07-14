@@ -20,7 +20,7 @@ export function EditorPanel() {
   const numeros = lineas.map((_, i) => String(i + 1).padStart(2, '0')).join('\n');
 
   return (
-    <div className="flex flex-col flex-1 h-[600px] bg-surface border-[3px] border-ink shadow-brutal">
+    <div className="flex flex-col flex-1 h-full bg-surface border-[3px] border-ink shadow-brutal">
 
       {/* TABS */}
       <div className="flex items-center bg-surface2 border-b-[3px] border-ink">

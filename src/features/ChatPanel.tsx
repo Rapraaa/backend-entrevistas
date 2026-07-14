@@ -5,7 +5,7 @@ import { Chip } from '../ui/Chip';
 
 export function ChatPanel() {
   return (
-    <div className="flex flex-col h-[600px] w-[480px] bg-surface border-[3px] border-ink shadow-brutal">
+    <div className="flex flex-col h-full w-[480px] bg-surface border-[3px] border-ink shadow-brutal">
 
       <div className="bg-surface2 border-b-[3px] border-ink p-4 flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
