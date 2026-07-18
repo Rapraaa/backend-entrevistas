@@ -1,6 +1,6 @@
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+import axios from 'axios';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 const TOKEN_KEY = 'sim_token';
 
 export function getToken(): string | null {
@@ -24,34 +24,27 @@ export class ApiError extends Error {
   }
 }
 
-export async function api<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+export const http = axios.create({ baseURL: BASE_URL });
+
+http.interceptors.request.use((config) => {
   const token = getToken();
-
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-
-  if (!res.ok) {
-    let message = `Error ${res.status}`;
-    try {
-      const body = await res.json();
-      message = Array.isArray(body.message)
-        ? body.message.join(', ')
-        : (body.message ?? message);
-    } catch {
-    }
-    throw new ApiError(res.status, message);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
+  return config;
+});
 
-  if (res.status === 204) return undefined as T;
-
-  return res.json() as Promise<T>;
-}
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status ?? 0;
+      const data = error.response?.data as { message?: string | string[] } | undefined;
+      const message = Array.isArray(data?.message)
+        ? data.message.join(', ')
+        : (data?.message ?? error.message);
+      return Promise.reject(new ApiError(status, message));
+    }
+    return Promise.reject(new ApiError(0, 'Error de conexión'));
+  },
+);

@@ -1,42 +1,37 @@
-import { api } from './api';
-import type {
-  CatalogItem,
-  Interview,
-  InterviewConfig,
-  Paginated,
-} from './types';
+import { http } from './api';
+import type { CatalogItem, Interview, InterviewConfig, Paginated } from './types';
 
-export function getCatalog(name: string): Promise<Paginated<CatalogItem>> {
-  return api<Paginated<CatalogItem>>(`/catalogs/${name}?limit=100`);
+export async function getCatalog(name: string): Promise<Paginated<CatalogItem>> {
+  const { data } = await http.get(`/catalogs/${name}`, { params: { limit: 100 } });
+  return data;
 }
 
-export function createInterview(config: InterviewConfig): Promise<Interview> {
-  return api<Interview>('/interviews', {
-    method: 'POST',
-    body: JSON.stringify(config),
-  });
+export async function createInterview(config: InterviewConfig): Promise<Interview> {
+  const { data } = await http.post('/interviews', config);
+  return data;
 }
 
-export function sendMessage(
+export async function sendMessage(
   id: string,
   content: string,
   codeSnippet?: string,
 ): Promise<Interview> {
   const body = codeSnippet ? { content, code_snippet: codeSnippet } : { content };
-  return api<Interview>(`/interviews/${id}/messages`, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
+  const { data } = await http.post(`/interviews/${id}/messages`, body);
+  return data;
 }
 
-export function finishInterview(id: string): Promise<Interview> {
-  return api<Interview>(`/interviews/${id}/finish`, { method: 'POST' });
+export async function finishInterview(id: string): Promise<Interview> {
+  const { data } = await http.post(`/interviews/${id}/finish`);
+  return data;
 }
 
-export function getInterview(id: string): Promise<Interview> {
-  return api<Interview>(`/interviews/${id}`);
+export async function getInterview(id: string): Promise<Interview> {
+  const { data } = await http.get(`/interviews/${id}`);
+  return data;
 }
 
-export function getHistory(): Promise<Interview[]> {
-  return api<Interview[]>('/interviews');
+export async function getHistory(): Promise<Interview[]> {
+  const { data } = await http.get('/interviews');
+  return data;
 }

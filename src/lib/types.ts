@@ -2,11 +2,19 @@ export type CatalogItem = {
   id: string;
   name: string;
   description?: string | null;
+  isActive?: boolean;
+  createdAt?: string;
 };
 
 export type Paginated<T> = {
   data: T[];
   meta: { total: number; page: number; limit: number; totalPages: number };
+};
+
+export type JwtUser = {
+  id: string;
+  email: string;
+  role: string;
 };
 
 export type ChatMessage = {
