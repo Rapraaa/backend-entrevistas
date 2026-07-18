@@ -15,6 +15,8 @@ export function InterviewScreen() {
   const navigate = useNavigate();
 
   const [interview, setInterview] = useState<Interview | null>(null);
+  const [answer, setAnswer] = useState('');
+  const [code, setCode] = useState('');
   const [sending, setSending] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [error, setError] = useState('');
@@ -28,13 +30,19 @@ export function InterviewScreen() {
       );
   }, [id]);
 
-  const handleSend = async (content: string, code?: string) => {
+  const handleSend = async () => {
     if (!id || sending) return;
+    const content = answer.trim();
+    const snippet = code.trim();
+    if (!content && !snippet) return;
     setSending(true);
     setError('');
     try {
-      const updated = await sendMessage(id, content, code);
+      const finalContent = content || 'Envié mi solución en el editor.';
+      const updated = await sendMessage(id, finalContent, snippet || undefined);
       setInterview(updated);
+      setAnswer('');
+      setCode('');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Error al enviar el mensaje');
     } finally {
@@ -74,10 +82,17 @@ export function InterviewScreen() {
           <ChatPanel
             messages={interview.chat_history}
             config={interview.config}
-            onSend={(content) => handleSend(content)}
+            value={answer}
+            onChange={setAnswer}
+            onSend={handleSend}
             sending={sending}
           />
-          <EditorPanel onSubmit={(code) => handleSend(code, code)} sending={sending} />
+          <EditorPanel
+            value={code}
+            onChange={setCode}
+            onSubmit={handleSend}
+            sending={sending}
+          />
         </div>
       ) : (
         !error && (

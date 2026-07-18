@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import { ChatBubble } from '../ui/ChatBubble';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -8,21 +8,18 @@ import type { ChatMessage, InterviewConfig } from '../lib/types';
 type Props = {
   messages: ChatMessage[];
   config?: InterviewConfig;
-  onSend: (content: string) => void;
+  value: string;
+  onChange: (value: string) => void;
+  onSend: () => void;
   sending: boolean;
 };
 
-export function ChatPanel({ messages, config, onSend, sending }: Props) {
-  const [text, setText] = useState('');
-
+export function ChatPanel({ messages, config, value, onChange, onSend, sending }: Props) {
   const aiCount = messages.filter((m) => m.sender === 'ai').length;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const value = text.trim();
-    if (!value || sending) return;
-    onSend(value);
-    setText('');
+    onSend();
   };
 
   return (
@@ -55,8 +52,8 @@ export function ChatPanel({ messages, config, onSend, sending }: Props) {
         <div className="flex-1">
           <Input
             placeholder="Escribe tu respuesta_"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
             disabled={sending}
           />
         </div>
