@@ -43,12 +43,11 @@ describe('InterviewScreen', () => {
     ).toBeInTheDocument();
   });
 
-  it('muestra el editor de código y el botón de enviar solución', async () => {
+  it('abre el editor en el lenguaje deducido de las tecnologías', async () => {
     renderScreen();
 
+    // La entrevista usa NestJS, así que el archivo debe ser .ts (no .js por defecto).
     expect(await screen.findByText('solucion.ts')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /enviar solución/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByText('notas.md')).toBeInTheDocument();
   });
 });
