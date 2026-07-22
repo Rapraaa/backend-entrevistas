@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import { useRef, useEffect, type FormEvent } from 'react';
 import { ChatBubble } from '../ui/ChatBubble';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -16,6 +16,11 @@ type Props = {
 
 export function ChatPanel({ messages, config, value, onChange, onSend, sending }: Props) {
   const aiCount = messages.filter((m) => m.sender === 'ai').length;
+  const finalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    finalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages.length, sending]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -46,6 +51,7 @@ export function ChatPanel({ messages, config, value, onChange, onSend, sending }
           </ChatBubble>
         ))}
         {sending && <p className="font-mono text-xs text-muted">La IA está pensando_</p>}
+        <div ref={finalRef} />
       </div>
 
       <form onSubmit={handleSubmit} className="border-t-[3px] border-ink p-3 flex items-center gap-2">

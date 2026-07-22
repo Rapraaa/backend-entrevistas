@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Navbar } from '../ui/Navbar';
-import { Avatar } from '../ui/Avatar';
+import { Flag } from 'lucide-react';
 import { Chip } from '../ui/Chip';
 import { Button } from '../ui/Button';
 import { ChatPanel } from './ChatPanel';
 import { EditorPanel } from './EditorPanel';
 import { getInterview, sendMessage, finishInterview } from '../lib/interviews';
+import { detectarLenguaje, buscarLenguaje } from '../lib/lenguajes';
 import { ApiError } from '../lib/api';
 import type { Interview } from '../lib/types';
 
@@ -17,6 +17,8 @@ export function InterviewScreen() {
   const [interview, setInterview] = useState<Interview | null>(null);
   const [answer, setAnswer] = useState('');
   const [code, setCode] = useState('');
+  const [lenguajeId, setLenguajeId] = useState('javascript');
+  const lenguaje = buscarLenguaje(lenguajeId);
   const [sending, setSending] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +26,10 @@ export function InterviewScreen() {
   useEffect(() => {
     if (!id) return;
     getInterview(id)
-      .then(setInterview)
+      .then((datos) => {
+        setInterview(datos);
+        setLenguajeId(detectarLenguaje(datos.config.technologies).id);
+      })
       .catch((err) =>
         setError(err instanceof ApiError ? err.message : 'Error al cargar la entrevista'),
       );
@@ -38,7 +43,7 @@ export function InterviewScreen() {
     setSending(true);
     setError('');
     try {
-      const finalContent = content || 'Envié mi solución en el editor.';
+      const finalContent = content || `Envié mi solución en ${lenguaje.nombre}.`;
       const updated = await sendMessage(id, finalContent, snippet || undefined);
       setInterview(updated);
       setAnswer('');
@@ -64,21 +69,27 @@ export function InterviewScreen() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-base">
-      <Navbar>
-        <Chip>MODO: {interview?.config.interview_type?.toUpperCase() ?? 'TÉCNICA'}</Chip>
+    <div className="flex flex-col h-full min-h-[640px] p-6 gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <h1 className="font-mono font-bold text-2xl text-fg uppercase">Entrevista</h1>
+          <Chip tono="lila">
+            MODO: {interview?.config.interview_type?.toUpperCase() ?? 'TÉCNICA'}
+          </Chip>
+        </div>
         <Button variante="secundario" onClick={handleFinish} disabled={finishing || !interview}>
-          {finishing ? 'FINALIZANDO...' : 'FINALIZAR'}
+          <span className="flex items-center gap-2">
+            <Flag size={16} strokeWidth={3} /> {finishing ? 'FINALIZANDO...' : 'FINALIZAR'}
+          </span>
         </Button>
-        <Avatar iniciales="RH" />
-      </Navbar>
+      </div>
 
       {error && (
-        <div className="m-4 p-3 border-2 border-ink bg-rojo text-ink font-mono font-bold">{error}</div>
+        <div className="p-3 border-2 border-ink bg-rojo text-ink font-mono font-bold">{error}</div>
       )}
 
       {interview ? (
-        <div className="flex-1 flex gap-6 p-6 overflow-hidden">
+        <div className="flex-1 flex gap-6 min-h-0 overflow-hidden">
           <ChatPanel
             messages={interview.chat_history}
             config={interview.config}
@@ -92,6 +103,8 @@ export function InterviewScreen() {
             onChange={setCode}
             onSubmit={handleSend}
             sending={sending}
+            lenguaje={lenguaje}
+            onLenguajeChange={setLenguajeId}
           />
         </div>
       ) : (
