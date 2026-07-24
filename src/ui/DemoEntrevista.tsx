@@ -18,7 +18,7 @@ export function DemoEntrevista() {
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [parcial, setParcial] = useState('');
   const [indice, setIndice] = useState(0);
-  const finalRef = useRef<HTMLDivElement>(null);
+  const cajaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const reducido =
@@ -61,7 +61,9 @@ export function DemoEntrevista() {
   }, [indice]);
 
   useEffect(() => {
-    finalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const caja = cajaRef.current;
+    if (!caja) return;
+    caja.scrollTop = caja.scrollHeight;
   }, [turnos.length, parcial]);
 
   const preguntas = turnos.filter((t) => t.autor === 'ia').length;
@@ -79,14 +81,16 @@ export function DemoEntrevista() {
         </span>
       </div>
 
-      <div className="flex h-[300px] flex-col gap-3 overflow-hidden p-4 sm:h-[340px]">
+      <div
+        ref={cajaRef}
+        className="flex h-[300px] flex-col gap-3 overflow-hidden p-4 sm:h-[340px]"
+      >
         {turnos.map((t, i) => (
           <Burbuja key={i} turno={t} />
         ))}
         {enCurso && parcial && (
           <Burbuja turno={{ autor: enCurso.autor, texto: parcial }} escribiendo />
         )}
-        <div ref={finalRef} />
       </div>
 
       <div className="flex items-center gap-2 border-t-[3px] border-trazo px-4 py-3">

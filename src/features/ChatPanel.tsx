@@ -19,10 +19,12 @@ export function ChatPanel({ messages, config, value, onChange, onSend, sending }
   const aiCount = messages.filter((m) => m.sender === 'ai').length;
   const total = Math.max(META_PREGUNTAS, aiCount);
   const progreso = Math.min(100, Math.round((aiCount / total) * 100));
-  const finalRef = useRef<HTMLDivElement>(null);
+  const cajaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    finalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const caja = cajaRef.current;
+    if (!caja) return;
+    caja.scrollTop = caja.scrollHeight;
   }, [messages.length, sending]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -71,6 +73,7 @@ export function ChatPanel({ messages, config, value, onChange, onSend, sending }
       </div>
 
       <div
+        ref={cajaRef}
         className="flex-1 overflow-y-auto p-4 flex flex-col gap-3"
         aria-live="polite"
         aria-busy={sending}
@@ -95,7 +98,6 @@ export function ChatPanel({ messages, config, value, onChange, onSend, sending }
             La IA está pensando tu siguiente pregunta_
           </div>
         )}
-        <div ref={finalRef} />
       </div>
 
       <form onSubmit={handleSubmit} className="border-t-[3px] border-trazo p-3 flex flex-col gap-2">
